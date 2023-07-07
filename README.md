@@ -95,10 +95,10 @@ O RDS armazenará os arquivos do container de WordPress, então antes de partirm
 
 - Dê um nome para a sua instância RDS 
 
-- **Escolha suas credenciais do banco de dados e guarde essas informações (Master username e Master password), pois são informações necessárias para a criação do container de WordPress**
+- Escolha suas credenciais do banco de dados e guarde essas informações (Master username e Master password), pois são informações necessárias para a criação do container de WordPress
 
 - Na etapa de "Conectividade", escolha o Security Group criado anteriormente para o RDS, selecione a mesma AZ que sua EC2 criada está e em "Acesso público" escolha a opção de sim.
 
-- **Ao fim da criação do RDS, haverá uma etapa chamada "Configurações adicionais" e nela existe um campo chamado "Nome inicial do banco de dados", esse nome também será necessário na criação do container de WordPress**
+- Ao fim da criação do RDS, haverá uma etapa chamada "Configurações adicionais" e nela existe um campo chamado "Nome inicial do banco de dados", esse nome também será necessário na criação do container de WordPress
 
 - Vá em "Criar banco de dados"
