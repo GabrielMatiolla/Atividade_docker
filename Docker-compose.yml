@@ -1,32 +1,19 @@
 version: '3.3'
 services:
-  db:
-    image: mysql:latest
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: teste
-      MYSQL_USER: teste
-      MYSQL_PASSWORD: teste
-      MYSQL_DATABASE: wordpress
-    ports:
-      - "3306:3306"
-    networks:
-      - wordpress-network
-  
   wordpress:
-    depends_on:
-      - db
     image: wordpress:latest
     ports:
       - "80:80"
     restart: always
     volumes:
-      - /mnt/efs/gabrielmatiolla/var/www/html:/var/www/html
+      - /mnt/efs/gabriel/var/www/html:/var/www/html
     environment:
-      WORDPRESS_DB_HOST: db
+      TZ: America/Sao_Paulo
+      WORDPRESS_DB_HOST: "Endpoint do RDS"
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DB_USER: teste
       WORDPRESS_DB_PASSWORD: teste
+      WORDPRESS_TABLE_CONFIG: wp_
     networks:
       - wordpress-network
 
