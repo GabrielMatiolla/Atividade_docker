@@ -172,7 +172,7 @@ Aqui está uma explicação de cada parte do script:
 
 - restart: é uma opção que define a política de reinicialização do contêiner. Neste caso, o valor "always" indica que o contêiner será sempre reiniciado, independentemente do motivo da parada.
 
- -environment: é uma opção que define variáveis de ambiente para o contêiner.
+- environment: é uma opção que define variáveis de ambiente para o contêiner.
 
 - TZ: define o fuso horário para o contêiner.
 
