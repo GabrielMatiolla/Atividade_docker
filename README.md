@@ -131,3 +131,81 @@ O RDS armazenará os arquivos do container de WordPress, então antes de partirm
 - A montagem automatizada ja foi feita nas opções de User data da nossa instância com o comando ```sudo yum install amazon-efs-utils -y```
 - Depois, deve-se editar o arquivo /etc/fstab, inserindo a seguinte linha: ```<DNS_Name>:/ /mnt/efs efs defaults,_netdev 0 0```
 - Para confirmar a montagem do EFS use o comando ``` df -h ```
+
+## Criação do arquivo Docker Compose para execução dos containers
+
+Este é um arquivo de configuração do Docker Compose, que é usado para definir e executar aplicativos Docker em vários contêineres. Para está atividade será utilizado um script para executar uma aplicação WordPress e um banco de dados MySQL em dois containers.
+
+Script utilizado para criação dos Containers:
+
+```
+version: '3.3'
+services:
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - /mnt/efs/gabriel/var/www/html:/var/www/html
+    environment:
+      TZ: America/Sao_Paulo
+      WORDPRESS_DB_HOST: "Endpoint do RDS"
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: teste
+      WORDPRESS_DB_PASSWORD: teste
+      WORDPRESS_TABLE_CONFIG: wp_
+    networks:
+      - wordpress-network
+
+networks:
+  wordpress-network:
+    driver: bridge
+```
+Aqui está uma explicação de cada parte do script:
+
+- version: '3.3': especifica a versão do formato do arquivo de configuração do Docker Compose que está sendo usado. Neste caso, é a versão 3.3.
+
+- services: é uma seção onde são definidos os serviços do aplicativo. Cada serviço representa um contêiner Docker. 
+
+- image: define a imagem do contêiner que será usada para o serviço. O Docker irá baixar a imagem, se ela ainda não estiver disponível localmente.
+
+- restart: é uma opção que define a política de reinicialização do contêiner. Neste caso, o valor "always" indica que o contêiner será sempre reiniciado, independentemente do motivo da parada.
+
+ -environment: é uma opção que define variáveis de ambiente para o contêiner.
+
+- TZ: define o fuso horário para o contêiner.
+
+- WORDPRESS_DB_HOST: define o host do banco de dados do WordPress.
+
+- WORDPRESS_DB_NAME: define o nome do banco de dados do WordPress.
+
+- WORDPRESS_DB_USER: define o nome de usuário do banco de dados do WordPress.
+
+- WORDPRESS_DB_PASSWORD: define a senha do usuário do banco de dados do WordPress.
+
+- ports: é uma opção que mapeia as portas do contêiner para as portas do host.
+
+- wordpress: é o nome do segundo serviço. Este serviço usa a imagem mais recente do WordPress disponível no Docker Hub, define algumas variáveis de ambiente para se conectar ao banco de dados, expõe a porta 80 do contêiner, cria um volume para armazenar os arquivos do WordPress e se conecta à rede "wordpress-network". Este serviço também depende do serviço "db".
+
+- Volumes: é uma opção que cria um volume para armazenar os arquivos da aplicação.
+
+- /mnt/efs/gabriel/var/www/html:/var/www/html: é o volume que será criado para armazenar os arquivos do WordPress. Ele mapeia o diretório /mnt/efs/vandielson/var/www/html no host para o diretório /var/www/html no contêiner.
+
+## Criação do Elastic Load Balancer
+No console da AWS vá para o serviço de Load Balancer e em seguida clicar no botão "Create a Load Balancer"
+
+- Escolha o tipo "Aplication Load Balancer"
+- Escolha um nome para seu Load Balancer
+- Na seção de listeners configure para a porta 80 HTTP, depois selecione pelo menos duas AZs.
+- Em security groups, crie um SG na porta 80 HTTP.
+- Em target groups escolha o nome do target group e defina o tipo, a porta, o protocolo e os health checks.
+- Depois escolha a instância EC2 em que está o container do WordPress.
+- Revise as configurações e clique em "Create".
+- Para garantir a disponibilidade da aplicação crie um clone da instância EC2 que está com o container WordPress em outra AZ para que ela seja usada como segunda opção pelo Load Balancer.
+- Feito as configurações acima basta copiar o DNS do Load Balancer para acessar o serviço do WordPress.
+
+---
+## Referências
+- [Deploy dockerized WordPress with AWS RDS & AWS EFS](https://www.alphabold.com/deploy-dockerized-wordpress-with-aws-rds-aws-efs/)
+- [Entenda TUDO sobre o AWS RDS](https://www.youtube.com/watch?v=041jLLlR0Fw)
