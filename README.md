@@ -206,6 +206,10 @@ No console da AWS vá para o serviço de Load Balancer e em seguida clicar no bo
 - Feito as configurações acima basta copiar o DNS do Load Balancer para acessar o serviço do WordPress.
 
 ---
+## Conclusão
+
+Ao realizar todos os passos da maneira correta, você terá acesso a aplicação por meio do DNS do Load Balancer.
+
 ## Referências
 - [Deploy dockerized WordPress with AWS RDS & AWS EFS](https://www.alphabold.com/deploy-dockerized-wordpress-with-aws-rds-aws-efs/)
-- [Entenda TUDO sobre o AWS RDS](https://www.youtube.com/watch?v=041jLLlR0Fw)
+- [Entenda tudo sobre o AWS RDS](https://www.youtube.com/watch?v=041jLLlR0Fw)
