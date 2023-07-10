@@ -134,7 +134,7 @@ O RDS armazenará os arquivos do container de WordPress, então antes de partirm
 
 ## Criação do arquivo Docker Compose para execução dos containers
 
-Este é um arquivo de configuração do Docker Compose, que é usado para definir e executar aplicativos Docker em vários contêineres. Para está atividade será utilizado um script para executar uma aplicação WordPress e um banco de dados MySQL em dois containers.
+Este é um arquivo de configuração do Docker Compose, que é usado para definir e executar aplicativos Docker em vários contêineres. Para está atividade será utilizado um script para executar uma aplicação WordPress.
 
 Script utilizado para criação dos Containers:
 
