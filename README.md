@@ -51,26 +51,48 @@ No serviço de EC2 do console da AWS no menu lateral a esquerda na categoria de 
 ## Configurações de User data
 Após escolher as configurações da instância clique em Detalhes avançados em seguida na área de User data coloque o seguinte shellscript:
 ```
-#!/bin/bash
+#!bin/bash
+# Indica que o interpretador do script é o bash.
 
 sudo yum update -y
-sudo yum install docker -y
+# Atualiza todos os pacotes instalados na instância.
+
+sudo yum install -y amazon-efs-utils
+# Instala o utilitário EFS na instância.
+
+sudo yum install -y docker
+# Instala o Docker na instância.
+
 sudo systemctl start docker
+# Inicia o serviço do Docker.
+
 sudo systemctl enable docker
+# Configura o Docker para ser iniciado automaticamente quando a instância é iniciada.
+
 sudo usermod -aG docker ec2-user
+# Adiciona o usuário "ec2-user" ao grupo "docker".
+
 sudo chkconfig docker on
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+# Configura o Docker para ser iniciado automaticamente quando a instância é iniciada
+
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+# Baixa a última versão do Docker Compose.
+
 sudo chmod +x /usr/local/bin/docker-compose
+# Dá permissão de execução ao arquivo baixado.
+
 sudo mv /usr/local/bin/docker-compose /bin/docker-compose
-sudo yum install nfs-utils -y
-sudo mkdir /mnt/efs/
-sudo chmod +rwx /mnt/efs/
+# Move o arquivo baixado para a pasta /bin.
+
+sudo curl -sL https://raw.githubusercontent.com/GabrielMatiolla/Atividade_docker/main/Docker-compose.yml --output /home/ec2-user/docker-compose.yml
+# Baixa o arquivo docker-compose.yml de um repositório no GitHub e salva na pasta /home/ec2-user.
+
+sudo mkdir -p /mnt/efs/gabriel/var/www/html
+# Cria uma pasta para armazenar os arquivos do WordPress no volume EFS.
+
+sudo docker-compose -f /home/ec2-user/docker-compose.yml up -d
+# Inicia um conjunto de contêineres com base nas instruções do arquivo docker-compose.yml.
 ```
-Esse shellcript nos auxiliará em:
-- Atualização do sistema operacional
-- Instalação do docker e do docker compose
-- Configurações de permissões
-- Prepara o ambiente para trabalhar com um sistema de arquivos NFS que armazenará os arquivos do WordPress
 
 Clique em executar instância para sua instância ser criada.
 
@@ -101,4 +123,11 @@ O RDS armazenará os arquivos do container de WordPress, então antes de partirm
 
 - Ao fim da criação do RDS, haverá uma etapa chamada "Configurações adicionais" e nela existe um campo chamado "Nome inicial do banco de dados", esse nome também será necessário na criação do container de WordPress
 
-- Vá em "Criar banco de dados"
+- Clique em "Criar banco de dados"
+
+## Configurações da instância EC2
+- Certifique-se de que o Docker e o Docker-compose foram instalados com a criação da instância usando os comandos: `` docker ps `` e `` docker-compose --version ``.
+- Deve-se montar o sistema de arquivos por meio do comando ``` sudo mount -t nfs4 <DNS_Name>:/ /mnt/efs ```
+- A montagem automatizada ja foi feita nas opções de User data da nossa instância com o comando ```sudo yum install amazon-efs-utils -y```
+- Depois, deve-se editar o arquivo /etc/fstab, inserindo a seguinte linha: ```<DNS_Name>:/ /mnt/efs efs defaults,_netdev 0 0```
+- Para confirmar a montagem do EFS use o comando ``` df -h ```
